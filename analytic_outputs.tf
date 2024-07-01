@@ -62,20 +62,61 @@ resource "azurerm_stream_analytics_output_cosmosdb" "this" {
 }
 
 resource "azurerm_stream_analytics_output_eventhub" "this" {
-  eventhub_name             = ""
-  name                      = ""
-  resource_group_name       = ""
-  servicebus_namespace      = ""
-  stream_analytics_job_name = ""
+  count = (length(var.job) && (length(var.resource_group) || var.resource_group_name != null)) == 0 ? 0 : length(var.output_eventhub)
+  eventhub_name = try(
+    var.eventhub_name != null ? data.azurerm_eventhub.this.name : element(azurerm_eventhub.this.*.name, lookup(var.output_eventhub[count.index], "eventhub_id"))
+  )
+  name = lookup(var.output_eventhub[count.index], "name")
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(
+      azurerm_resource_group.this.*.name, lookup(var.output_eventhub[count.index], "resource_group_id")
+    )
+  )
+  servicebus_namespace = try(
+    var.servicebus_namespace_name != null ? data.azurerm_servicebus_namespace.this.name : element(
+    azurerm_servicebus_namespace.this.*.name, lookup(var.output_eventhub[count.index], "servicebus_namespace_id"))
+  )
+  stream_analytics_job_name = try(
+    element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_eventhub[count.index], "stream_analytics_job_id"))
+  )
+  shared_access_policy_key  = lookup(var.output_eventhub[count.index], "shared_access_policy_key")
+  shared_access_policy_name = lookup(var.output_eventhub[count.index], "shared_access_policy_name")
+  property_columns          = lookup(var.output_eventhub[count.index], "property_columns")
+  authentication_mode       = lookup(var.output_eventhub[count.index], "authentication_mode")
+  partition_key             = lookup(var.output_eventhub[count.index], "partition_key")
+
+  dynamic "serialization" {
+    for_each = lookup(var.output_eventhub[count.index], "serialization")
+    content {
+      type            = lookup(serialization.value, "type")
+      encoding        = lookup(serialization.value, "encoding")
+      field_delimiter = lookup(serialization.value, "field_delimiter")
+      format          = lookup(serialization.value, "format")
+    }
+  }
 }
 
 resource "azurerm_stream_analytics_output_function" "this" {
-  api_key                   = ""
-  function_app              = ""
-  function_name             = ""
-  name                      = ""
-  resource_group_name       = ""
-  stream_analytics_job_name = ""
+  count = ((length(var.function_app) || var.function_app != null) &&
+    (length(var.resource_group) || var.resource_group_name != null) &&
+  length(var.job)) == 0 ? 0 : length(var.output_function)
+  api_key = lookup(var.output_function[count.index], "api_key")
+  function_app = try(
+    var.function_app_name != null ? data.azurerm_function_app.this.name : element(
+    azurerm_function_app.this.*.name, lookup(var.output_function[count.index], "function_id"))
+  )
+  function_name = lookup(var.output_function[count.index], "function_name")
+  name          = lookup(var.output_function[count.index], "name")
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(
+      azurerm_resource_group.this.*.name, lookup(var.output_function[count.index], "resource_group_id")
+    )
+  )
+  stream_analytics_job_name = try(
+    element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_function[count.index], "stream_analytics_job_id"))
+  )
+  batch_max_count    = lookup(var.output_function[count.index], "batch_max_count")
+  batch_max_in_bytes = lookup(var.output_function[count.index], "batch_max_in_bytes")
 }
 
 resource "azurerm_stream_analytics_output_mssql" "this" {

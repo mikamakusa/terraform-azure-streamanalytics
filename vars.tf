@@ -38,7 +38,7 @@ variable "tags" {
 }
 
 variable "resource_group" {
-  type    = list(object({
+  type = list(object({
     id       = number
     location = string
     name     = string
@@ -242,6 +242,8 @@ variable "output_eventhub" {
     id                        = number
     name                      = string
     stream_analytics_job_id   = number
+    eventhub_id               = optional(number)
+    servicebus_namespace_id   = optional(number)
     shared_access_policy_key  = optional(string)
     shared_access_policy_name = optional(string)
     property_columns          = optional(list(string))
@@ -269,6 +271,7 @@ variable "output_function" {
     id                      = number
     api_key                 = string
     function_name           = string
+    function_id             = optional(number)
     name                    = string
     stream_analytics_job_id = number
     batch_max_count         = optional(number)
@@ -601,4 +604,50 @@ variable "stream_input_iothub" {
   default     = []
   description = <<EOF
   EOF
+}
+
+variable "eventhub" {
+  type = list(object({
+    id                = number
+    name              = string
+    namespace_name    = string
+    partition_count   = number
+    resource_group_id = optional(number)
+  }))
+  default = []
+}
+
+variable "servicebus_namespace" {
+  type = list(object({
+    id                = number
+    name              = string
+    resource_group_id = optional(number)
+    sku               = string
+  }))
+  default = []
+}
+
+variable "app_service_plan" {
+  type = list(object({
+    id                = number
+    name              = string
+    resource_group_id = optional(number)
+  }))
+  default = []
+}
+
+variable "function_app" {
+  type = list(object({
+    id                  = number
+    app_service_plan_id = optional(number)
+    name                = string
+    resource_group_id   = optional(number)
+    storage_account_id  = optional(number)
+  }))
+  default = []
+}
+
+variable "app_service_plan_name" {
+  type    = string
+  default = null
 }
