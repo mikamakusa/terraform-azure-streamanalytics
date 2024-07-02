@@ -651,3 +651,25 @@ variable "app_service_plan_name" {
   type    = string
   default = null
 }
+
+variable "sql_server" {
+  type = list(object({
+    id                           = number
+    administrator_login          = string
+    administrator_login_password = string
+    name                         = string
+    resource_group_id            = optional(number)
+    version                      = string
+  }))
+  default = []
+}
+
+variable "sql_database" {
+  type = list(object({
+    id                = number
+    name              = string
+    resource_group_id = optional(number)
+    server_id         = optional(number)
+  }))
+  default = []
+}

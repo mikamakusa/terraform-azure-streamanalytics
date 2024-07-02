@@ -120,12 +120,36 @@ resource "azurerm_stream_analytics_output_function" "this" {
 }
 
 resource "azurerm_stream_analytics_output_mssql" "this" {
-  database                  = ""
-  name                      = ""
-  resource_group_name       = ""
-  server                    = ""
-  stream_analytics_job_name = ""
-  table                     = ""
+  count = ((length(var.sql_server) || var.sql_server_name != null) &&
+    (length(var.job) &&
+      (length(var.resource_group) || var.resource_group_name != null) &&
+  (length(var.sql_database) || var.sql_database_name != null))) == 0 ? 0 : length(var.output_mssql)
+  database = try(
+    var.sql_database_name != null ? data.azurerm_sql_database.this.name : element(
+    azurerm_sql_database.this.*.name, lookup(var.output_mssql[count.index], "database_id"))
+  )
+  name = lookup(var.output_mssql[count.index], "name")
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(
+      azurerm_resource_group.this.*.name, lookup(var.output_mssql[count.index], "resource_group_id")
+    )
+  )
+  server = try(
+    var.sql_server_name != null ? data.azurerm_sql_server.this.*.name : element(
+      azurerm_sql_server.this.*.fully_qualified_domain_name, lookup(var.output_mssql[count.index], "server_id")
+    )
+  )
+  stream_analytics_job_name = try(
+    element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_function[count.index], "stream_analytics_job_id"))
+  )
+  table = try(
+    var.sql_database_name != null ? data.azurerm_sql_database.this.name : element(azurerm_sql_database.this.*.name, lookup(var.output_mssql[count.index], "database_id"))
+  )
+  authentication_mode = lookup(var.output_mssql[count.index], "authentication_mode")
+  max_batch_count     = lookup(var.output_mssql[count.index], "max_batch_count")
+  max_writer_count    = lookup(var.output_mssql[count.index], "max_writer_count")
+  password            = sensitive(lookup(var.output_mssql[count.index], "password"))
+  user                = sensitive(lookup(var.output_mssql[count.index], "user"))
 }
 
 resource "azurerm_stream_analytics_output_powerbi" "this" {
