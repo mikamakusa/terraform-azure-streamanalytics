@@ -153,20 +153,43 @@ resource "azurerm_stream_analytics_output_mssql" "this" {
 }
 
 resource "azurerm_stream_analytics_output_powerbi" "this" {
-  dataset                 = ""
-  group_id                = ""
-  group_name              = ""
-  name                    = ""
-  stream_analytics_job_id = ""
-  table                   = ""
+  count                     = length(var.job) == 0 ? 0 : length(var.output_powerbi)
+  dataset                   = lookup(var.output_powerbi[count.index], "dataset")
+  group_id                  = lookup(var.output_powerbi[count.index], "group_id")
+  group_name                = lookup(var.output_powerbi[count.index], "group_name")
+  name                      = lookup(var.output_powerbi[count.index], "name")
+  stream_analytics_job_id   = try(element(azurerm_stream_analytics_job.this.*.id, lookup(var.output_powerbi[count.index], "stream_analytics_job_id")))
+  table                     = lookup(var.output_powerbi[count.index], "table")
+  token_user_display_name   = lookup(var.output_powerbi[count.index], "token_user_display_name")
+  token_user_principal_name = lookup(var.output_powerbi[count.index], "token_user_principal_name")
 }
 
 resource "azurerm_stream_analytics_output_servicebus_queue" "this" {
-  name                      = ""
-  queue_name                = ""
-  resource_group_name       = ""
-  servicebus_namespace      = ""
-  stream_analytics_job_name = ""
+  count = ((length(var.servicebus_queue) || var.servicebus_queue_name != null) &&
+    (length(var.job) &&
+      (length(var.resource_group) || var.resource_group_name != null) &&
+  (length(var.servicebus_namespace) || var.servicebus_namespace_name != null))) == 0 ? 0 : length(var.output_servicebus_queue)
+  name = lookup(var.output_servicebus_queue[count.index], "name")
+  queue_name = try(
+    var.servicebus_queue_name != null ? data.azurerm_servicebus_queue.this.name : element(
+    azurerm_servicebus_queue.this.*.name, lookup(var.output_servicebus_queue[count.index], "queue_id"))
+  )
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(
+    azurerm_resource_group.this.*.name, lookup(var.output_servicebus_queue[count.index], "resource_group_id"))
+  )
+  servicebus_namespace = try(
+    var.servicebus_namespace_name != null ? data.azurerm_servicebus_namespace.this.name : element(
+    azurerm_servicebus_namespace.this.*.name, lookup(var.output_servicebus_queue[count.index], "servicebus_namespace_id"))
+  )
+  stream_analytics_job_name = try(
+    element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_servicebus_queue[count.index], "stream_analytics_job_id"))
+  )
+  authentication_mode       = lookup(var.output_servicebus_queue[count.index], "authentication_mode")
+  property_columns          = lookup(var.output_servicebus_queue[count.index], "property_columns")
+  shared_access_policy_key  = sensitive(data.azurerm_servicebus_namespace.this.default_primary_key)
+  shared_access_policy_name = lookup(var.output_servicebus_queue[count.index], "shared_access_policy_name")
+  system_property_columns   = lookup(var.output_servicebus_queue[count.index], "system_property_columns")
 }
 
 resource "azurerm_stream_analytics_output_servicebus_topic" "this" {

@@ -673,3 +673,48 @@ variable "sql_database" {
   }))
   default = []
 }
+
+variable "servicebus_queue" {
+  type = list(object({
+    id                                      = number
+    name                                    = string
+    namespace_id                            = optional(number)
+    auto_delete_on_idle                     = optional(string)
+    dead_lettering_on_message_expiration    = optional(bool)
+    default_message_ttl                     = optional(string)
+    duplicate_detection_history_time_window = optional(string)
+    enable_partitioning                     = optional(bool)
+    enable_batched_operations               = optional(bool)
+    enable_express                          = optional(bool)
+    forward_dead_lettered_messages_to       = optional(string)
+    forward_to                              = optional(string)
+    lock_duration                           = optional(string)
+    max_delivery_count                      = optional(number)
+    max_message_size_in_kilobytes           = optional(number)
+    max_size_in_megabytes                   = optional(number)
+    requires_duplicate_detection            = optional(bool)
+    requires_session                        = optional(bool)
+    status                                  = optional(string)
+  }))
+  default = []
+}
+
+variable "servicebus_topic" {
+  type = list(object({
+    id                                      = number
+    name                                    = string
+    namespace_id                            = optional(number)
+    auto_delete_on_idle                     = optional(string)
+    default_message_ttl                     = optional(string)
+    duplicate_detection_history_time_window = optional(string)
+    enable_batched_operations               = optional(bool)
+    enable_express                          = optional(bool)
+    enable_partitioning                     = optional(bool)
+    max_message_size_in_kilobytes           = optional(number)
+    max_size_in_megabytes                   = optional(number)
+    requires_duplicate_detection            = optional(bool)
+    status                                  = optional(string)
+    support_ordering                        = optional(bool)
+  }))
+  default = []
+}
