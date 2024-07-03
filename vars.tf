@@ -27,6 +27,15 @@ variable "storage_table_name" {
   default = null
 }
 
+variable "storage_table" {
+  type = list(object({
+    id                 = number
+    name               = string
+    storage_account_id = number
+  }))
+  default = []
+}
+
 variable "eventhub_consumer_group_name" {
   type    = string
   default = null
@@ -48,28 +57,48 @@ variable "resource_group" {
 
 variable "storage_account" {
   type = list(object({
-    id = number
+    id                       = number
+    account_replication_type = string
+    account_tier             = string
+    name                     = string
+    resource_group_id        = optional(number)
   }))
   default = []
 }
 
 variable "storage_container" {
   type = list(object({
-    id = number
+    id                 = number
+    name               = string
+    storage_account_id = optional(number)
+  }))
+  default = []
+}
+
+variable "data_lake_gen2_filesystem" {
+  type = list(object({
+    id                 = number
+    name               = string
+    storage_account_id = optional(number)
   }))
   default = []
 }
 
 variable "cosmosdb_account" {
   type = list(object({
-    id = number
+    id                = number
+    resource_group_id = optional(number)
+    offer_type        = string
+    name              = string
   }))
   default = []
 }
 
 variable "cosmosdb_sql_database" {
   type = list(object({
-    id = number
+    id                = number
+    resource_group_id = optional(number)
+    name              = string
   }))
   default = []
 }
@@ -171,7 +200,8 @@ variable "managed_private_endpoint" {
     name                        = string
     stream_analytics_cluster_id = number
     subresource_name            = string
-    target_resource_id          = number
+    target_resource_id          = optional(number)
+    resource_group_id           = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -190,6 +220,9 @@ variable "output_blob" {
     batch_max_wait_time     = optional(string)
     batch_min_rows          = optional(number)
     storage_account_key     = optional(string)
+    resource_group_id       = optional(number)
+    storage_account_id      = optional(number)
+    storage_container_id    = optional(number)
     serialization = list(object({
       type            = string
       encoding        = optional(string)
@@ -204,9 +237,12 @@ variable "output_blob" {
 
 variable "cosmosdb_sql_container" {
   type = list(object({
-    id                 = number
-    name               = string
-    partition_key_path = string
+    id                   = number
+    name                 = string
+    partition_key_path   = string
+    cosmosdb_account_id  = optional(number)
+    cosmosdb_database_id = optional(number)
+    resource_group_id    = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -215,12 +251,15 @@ variable "cosmosdb_sql_container" {
 
 variable "output_cosmosdb" {
   type = list(object({
-    id                      = number
-    container_id            = number
-    name                    = string
-    stream_analytics_job_id = number
-    document_id             = string
-    partition_key           = string
+    id                       = number
+    container_id             = number
+    name                     = string
+    stream_analytics_job_id  = number
+    document_id              = string
+    partition_key            = string
+    cosmosdb_account_id      = optional(number)
+    cosmosdb_sql_database_id = optional(number)
+    resource_group_id        = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -249,6 +288,7 @@ variable "output_eventhub" {
     property_columns          = optional(list(string))
     authentication_mode       = optional(string)
     partition_key             = optional(string)
+    resource_group_id         = optional(number)
     serialization = list(object({
       type            = string
       encoding        = optional(string)
@@ -276,6 +316,7 @@ variable "output_function" {
     stream_analytics_job_id = number
     batch_max_count         = optional(number)
     batch_max_in_bytes      = optional(number)
+    resource_group_id       = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -302,6 +343,9 @@ variable "output_mssql" {
     max_writer_count        = optional(number)
     password                = optional(string)
     user                    = optional(string)
+    resource_group_id       = optional(number)
+    server_id               = optional(number)
+    database_id             = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -344,9 +388,11 @@ variable "output_servicebus_queue" {
   type = list(object({
     id                        = number
     name                      = string
-    queue_name                = string
+    queue_id                  = optional(number)
     stream_analytics_job_id   = number
     authentication_mode       = optional(string)
+    resource_group_id         = optional(number)
+    servicebus_namespace_id   = optional(number)
     property_columns          = optional(list(string))
     shared_access_policy_name = optional(string)
     system_property_columns   = optional(map(string))
@@ -367,6 +413,9 @@ variable "output_servicebus_topic" {
     id                        = number
     name                      = string
     stream_analytics_job_id   = number
+    resource_group_id         = optional(number)
+    servicebus_namespace_id   = optional(number)
+    queue_id                  = optional(number)
     authentication_mode       = optional(string)
     property_columns          = optional(list(string))
     shared_access_policy_name = optional(string)
@@ -403,6 +452,7 @@ variable "output_synapse" {
     synapse_workspace_id    = number
     stream_analytics_job_id = number
     table                   = string
+    resource_group_id       = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -418,6 +468,9 @@ variable "output_table" {
     row_key                 = string
     stream_analytics_job_id = number
     columns_to_remove       = optional(list(string))
+    resource_group_id       = optional(number)
+    storage_account_id      = optional(number)
+    table_id                = optional(number)
   }))
   default     = []
   description = <<EOF
@@ -433,6 +486,9 @@ variable "reference_input_blob" {
     stream_analytics_job_id = number
     time_format             = string
     authentication_mode     = optional(string)
+    resource_group_id       = optional(number)
+    database_id             = optional(number)
+    server_id               = optional(number)
     serialization = list(object({
       type            = string
       encoding        = optional(string)
@@ -464,11 +520,15 @@ EOF
 
 variable "stream_input_blob" {
   type = list(object({
-    id           = number
-    date_format  = string
-    name         = string
-    path_pattern = string
-    time_format  = string
+    id                      = number
+    date_format             = string
+    name                    = string
+    path_pattern            = string
+    time_format             = string
+    resource_group_id       = optional(number)
+    storage_account_id      = optional(number)
+    storage_container_id    = optional(number)
+    stream_analytics_job_id = optional(number)
     serialization = list(object({
       type            = string
       encoding        = optional(string)

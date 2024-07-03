@@ -96,3 +96,4 @@ data "azurerm_app_service_plan" "this" {
   name                = var.app_service_plan_name
   resource_group_name = data.azurerm_resource_group.this.name
 }
+

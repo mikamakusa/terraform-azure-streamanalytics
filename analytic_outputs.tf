@@ -190,35 +190,95 @@ resource "azurerm_stream_analytics_output_servicebus_queue" "this" {
   shared_access_policy_key  = sensitive(data.azurerm_servicebus_namespace.this.default_primary_key)
   shared_access_policy_name = lookup(var.output_servicebus_queue[count.index], "shared_access_policy_name")
   system_property_columns   = lookup(var.output_servicebus_queue[count.index], "system_property_columns")
+
+  dynamic "serialization" {
+    for_each = lookup(var.output_servicebus_queue[count.index], "serialization")
+    content {
+      type            = lookup(serialization.value, "type")
+      encoding        = lookup(serialization.value, "encoding")
+      field_delimiter = lookup(serialization.value, "field_delimiter")
+      format          = lookup(serialization.value, "format")
+    }
+  }
 }
 
 resource "azurerm_stream_analytics_output_servicebus_topic" "this" {
-  name                      = ""
-  resource_group_name       = ""
-  servicebus_namespace      = ""
-  stream_analytics_job_name = ""
-  topic_name                = ""
+  count = ((length(var.resource_group) || var.resource_group_name != null) &&
+    length(var.job) && (length(var.servicebus_namespace) || var.servicebus_namespace_name != null) &&
+  (length(var.servicebus_topic) || var.servicebus_topic_name != null)) == 0 ? 0 : length(var.output_servicebus_topic)
+  name = lookup(var.output_servicebus_topic[count.index], "name")
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(
+    azurerm_resource_group.this.*.name, lookup(var.output_servicebus_topic[count.index], "resource_group_id"))
+  )
+  servicebus_namespace = try(
+    var.servicebus_namespace_name != null ? data.azurerm_servicebus_namespace.this.name : element(
+    azurerm_servicebus_namespace.this.*.name, lookup(var.output_servicebus_topic[count.index], "servicebus_namespace_id"))
+  )
+  stream_analytics_job_name = try(
+    element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_servicebus_queue[count.index], "stream_analytics_job_id"))
+  )
+  topic_name = try(
+    var.servicebus_topic_name != null ? data.azurerm_servicebus_topic.this.name : element(
+    azurerm_servicebus_topic.this.*.name, lookup(var.output_servicebus_topic[count.index], "queue_id"))
+  )
+  authentication_mode       = lookup(var.output_servicebus_topic[count.index], "authentication_mode")
+  property_columns          = lookup(var.output_servicebus_topic[count.index], "property_columns")
+  shared_access_policy_key  = sensitive(data.azurerm_servicebus_namespace.this.default_primary_key)
+  shared_access_policy_name = lookup(var.output_servicebus_topic[count.index], "shared_access_policy_name")
+  system_property_columns   = lookup(var.output_servicebus_topic[count.index], "system_property_columns")
+
+  dynamic "serialization" {
+    for_each = lookup(var.servicebus_topic_name[count.index], "serialization")
+    content {
+      type            = lookup(serialization.value, "type")
+      encoding        = lookup(serialization.value, "encoding")
+      field_delimiter = lookup(serialization.value, "field_delimiter")
+      format          = lookup(serialization.value, "format")
+    }
+  }
 }
 
 resource "azurerm_stream_analytics_output_synapse" "this" {
-  database                  = ""
-  name                      = ""
-  password                  = ""
-  resource_group_name       = ""
-  server                    = ""
-  stream_analytics_job_name = ""
-  table                     = ""
-  user                      = ""
+  count = (length(var.synapse_workspace) &&
+    length(var.job) &&
+  (length(var.resource_group) || var.resource_group_name != null)) == 0 ? 0 : length(var.output_synapse)
+  database = lookup(var.output_synapse[count.index], "database")
+  name     = lookup(var.output_synapse[count.index], "name")
+  password = sensitive(try(element(azurerm_synapse_workspace.this.*.sql_administrator_login_password, lookup(var.output_synapse[count.index], "synapse_workspace_id"))))
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(azurerm_resource_group.this.*.name, lookup(var.output_synapse[count.index], "resource_group_id"))
+  )
+  server                    = try(element(azurerm_synapse_workspace.this.*.connectivity_endpoints["sqlOnDemand"], lookup(var.output_synapse[count.index], "synapse_workspace_id")))
+  stream_analytics_job_name = try(element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_synapse[count.index], "stream_analytics_job_id")))
+  table                     = lookup(var.output_synapse[count.index], "table")
+  user                      = sensitive(try(element(azurerm_synapse_workspace.this.*.sql_administrator_login, lookup(var.output_synapse[count.index], "synapse_workspace_id"))))
 }
 
 resource "azurerm_stream_analytics_output_table" "this" {
-  batch_size                = 0
-  name                      = ""
-  partition_key             = ""
-  resource_group_name       = ""
-  row_key                   = ""
-  storage_account_key       = ""
-  storage_account_name      = ""
-  stream_analytics_job_name = ""
-  table                     = ""
+  count = (length(var.job) &&
+    (length(var.storage_table) || var.storage_table_name != null) &&
+  (length(var.resource_group) || var.resource_group_name != null)) == 0 ? 0 : length(var.output_table)
+  batch_size    = lookup(var.output_table[count.index], "batch_size")
+  name          = lookup(var.output_table[count.index], "name")
+  partition_key = lookup(var.output_table[count.index], "partition_key")
+  resource_group_name = try(
+    var.resource_group_name != null ? data.azurerm_resource_group.this.name : element(
+      azurerm_resource_group.this.*.name, lookup(var.output_table[count.index], "resource_group_id")
+    )
+  )
+  row_key             = lookup(var.output_table[count.index], "row_key")
+  storage_account_key = sensitive(data.azurerm_storage_account.this.primary_access_key)
+  storage_account_name = try(
+    var.storage_account_name != null ? data.azurerm_storage_account.this.name : element(
+      azurerm_storage_account.this.*.name, lookup(var.output_table[count.index], "storage_account_id")
+    )
+  )
+  stream_analytics_job_name = lookup(var.output_table[count.index], "stream_analytics_job_name")
+  table = try(
+    var.storage_table_name != null ? data.azurerm_storage_table.this.name : element(
+      azurerm_storage_table.this.*.name, lookup(var.output_table[count.index], "table_id")
+    )
+  )
+  columns_to_remove = lookup(var.output_table[count.index], "columns_to_remove")
 }

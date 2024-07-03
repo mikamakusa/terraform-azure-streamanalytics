@@ -21,15 +21,15 @@ resource "azurerm_stream_analytics_job" "this" {
   events_out_of_order_max_delay_in_seconds = lookup(var.job[count.index], "events_out_of_order_max_delay_in_seconds")
   events_out_of_order_policy               = lookup(var.job[count.index], "events_out_of_order_policy")
   output_error_policy                      = lookup(var.job[count.index], "output_error_policy")
-  stream_analytics_cluster_id              = try(
+  stream_analytics_cluster_id = try(
     element(
       azurerm_stream_analytics_cluster.this.*.id,
       lookup(var.job[count.index], "stream_analytics_cluster_id")
     )
   )
-  streaming_units                          = lookup(var.job[count.index], "streaming_units")
-  tags                                     = merge(var.tags, lookup(var.job[count.index], "tags"))
-  type                                     = lookup(var.job[count.index], "type")
+  streaming_units = lookup(var.job[count.index], "streaming_units")
+  tags            = merge(var.tags, lookup(var.job[count.index], "tags"))
+  type            = lookup(var.job[count.index], "type")
 
   dynamic "identity" {
     for_each = lookup(var.job[count.index], "identity") == null ? [] : ["identity"]
@@ -50,22 +50,9 @@ resource "azurerm_stream_analytics_job" "this" {
 }
 
 resource "azurerm_stream_analytics_job_schedule" "this" {
-  count = (length(var.resource_group) || (var.resource_group_name != null)) == 0 ? 0 : length(var.job_schedule)
-  location = try(
-    var.resource_group_name != null ? data.azurerm_resource_group.this.location :
-    element(
-      azurerm_resource_group.this.*.name,
-    lookup(var.job_schedule[count.index], "resource_group_id"))
-  )
-  name = lookup(var.job_schedule[count.index], "name")
-  resource_group_name = try(
-    var.resource_group_name != null ? data.azurerm_resource_group.this.location :
-    element(
-      azurerm_resource_group.this.*.name,
-    lookup(var.job_schedule[count.index], "resource_group_id"))
-  )
-  transformation_query    = ""
-  start_mode              = ""
+  count      = length(var.job) == 0 ? 0 : length(var.job_schedule)
+  start_mode = lookup(var.job_schedule[count.index], "start_mode")
+  start_time = lookup(var.job_schedule[count.index], "start_time")
   stream_analytics_job_id = try(
     element(azurerm_stream_analytics_job.this.*.id, lookup(var.job_schedule[count.index], "stream_analytics_job_id"))
   )
