@@ -28,11 +28,7 @@ variable "storage_table_name" {
 }
 
 variable "storage_table" {
-  type = list(object({
-    id                 = number
-    name               = string
-    storage_account_id = number
-  }))
+  type    = any
   default = []
 }
 
@@ -56,31 +52,17 @@ variable "resource_group" {
 }
 
 variable "storage_account" {
-  type = list(object({
-    id                       = number
-    account_replication_type = string
-    account_tier             = string
-    name                     = string
-    resource_group_id        = optional(number)
-  }))
+  type    = any
   default = []
 }
 
 variable "storage_container" {
-  type = list(object({
-    id                 = number
-    name               = string
-    storage_account_id = optional(number)
-  }))
+  type = any
   default = []
 }
 
 variable "data_lake_gen2_filesystem" {
-  type = list(object({
-    id                 = number
-    name               = string
-    storage_account_id = optional(number)
-  }))
+  type = any
   default = []
 }
 
@@ -436,6 +418,7 @@ variable "synapse_workspace" {
   type = list(object({
     id                               = number
     name                             = string
+    storage_data_lake_gen2_filesystem_id = any
     sql_administrator_login          = optional(string)
     sql_administrator_login_password = optional(string)
   }))
@@ -561,86 +544,7 @@ variable "stream_input_eventhub" {
 }
 
 variable "iothub" {
-  type = list(object({
-    id                            = number
-    name                          = string
-    local_authentication_enabled  = optional(bool)
-    event_hub_partition_count     = optional(number)
-    event_hub_retention_in_days   = optional(number)
-    endpoint                      = optional(list(string))
-    public_network_access_enabled = optional(bool)
-    min_tls_version               = optional(string)
-    tags                          = optional(map(string))
-    sku = list(object({
-      name     = string
-      capacity = string
-    }))
-    cloud_to_device = optional(list(object({
-      default_ttl        = optional(string)
-      max_delivery_count = optional(number)
-      feedback = optional(list(object({
-        time_to_live       = optional(string)
-        max_delivery_count = optional(number)
-        lock_duration      = optional(string)
-      })), optional(list(string)))
-    })), optional(list(string)))
-    endpoint = optional(list(object({
-      authentication_type        = optional(string)
-      batch_frequency_in_seconds = optional(number)
-      connection_string          = optional(string)
-      container_name             = optional(string)
-      encoding                   = optional(string)
-      endpoint_uri               = optional(string)
-      entity_path                = optional(string)
-      file_name_format           = optional(string)
-      identity_id                = optional(string)
-      max_chunk_size_in_bytes    = optional(number)
-      name                       = optional(string)
-      resource_group_name        = optional(string)
-      type                       = optional(string)
-    })), optional(list(string)))
-    enrichment = optional(list(object({
-      key            = optional(string)
-      value          = optional(string)
-      endpoint_names = optional(list(string))
-    })), optional(list(string)))
-    fallback_route = optional(list(object({
-      source         = optional(string)
-      condition      = optional(string)
-      enabled        = optional(bool)
-      endpoint_names = optional(list(string))
-    })), optional(list(string)))
-    file_upload = optional(list(object({
-      connection_string   = string
-      container_name      = string
-      authentication_type = optional(string)
-      default_ttl         = optional(string)
-      lock_duration       = optional(string)
-      max_delivery_count  = optional(number)
-      notifications       = optional(bool)
-      sas_ttl             = optional(string)
-    })), optional(list(string)))
-    identity = optional(list(object({
-      type         = string
-      identity_ids = optional(list(string))
-    })), optional(list(string)))
-    network_rule_set = optional(list(object({
-      default_action                     = optional(string)
-      apply_to_builtin_eventhub_endpoint = optional(bool)
-      ip_rule = optional(list(object({
-        ip_mask = optional(string)
-        name    = optional(string)
-        action  = optional(string)
-      })), optional(list(string)))
-    })), optional(list(string)))
-    route = optional(list(object({
-      name           = optional(string)
-      source         = optional(string)
-      condition      = optional(string)
-      endpoint_names = optional(list(string))
-      enabled        = optional(bool)
-    })), [])
-  }))
+  type        = any
   default     = []
   description = <<EOF
   EOF

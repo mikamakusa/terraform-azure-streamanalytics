@@ -42,19 +42,16 @@ resource "azurerm_stream_analytics_reference_input_blob" "this" {
   )
   storage_account_name = try(
     var.storage_account_name != null ? data.azurerm_storage_account.this.name : element(
-      azurerm_storage_account.this.*.name, lookup(var.reference_input_blob[count.index], "storage_account_id")
+      module.storage.*.storage_account_name, lookup(var.reference_input_blob[count.index], "storage_account_id")
     )
   )
   storage_container_name = try(
     var.storage_container_name != null ? data.azurerm_storage_container.this.name : element(
-    azurerm_storage_container.this.*.name, lookup(var.reference_input_blob[count.index], "storage_container_id"))
+      module.storage.*.container_name, lookup(var.reference_input_blob[count.index], "storage_container_id"))
   )
   stream_analytics_job_name = try(element(azurerm_stream_analytics_job.this.*.name, lookup(var.reference_input_blob[count.index], "stream_analytics_job_id")))
   time_format               = lookup(var.reference_input_blob[count.index], "time_format")
-  storage_account_key = try(
-    var.storage_account_name != null ? sensitive(data.azurerm_storage_account.this.primary_access_key) : element(
-    sensitive(azurerm_storage_account.this.*.primary_access_key), lookup(var.reference_input_blob[count.index], "storage_account_id"))
-  )
+  storage_account_key = try(var.storage_account_name != null ? sensitive(data.azurerm_storage_account.this.primary_access_key) : element(sensitive(module.storage.*.storage_account_primary_access_key, lookup(var.reference_input_blob[count.index], "storage_account_id"))))
   authentication_mode = lookup(var.reference_input_blob[count.index], "authentication_mode")
 
   dynamic "serialization" {

@@ -16,11 +16,11 @@ resource "azurerm_stream_analytics_stream_input_blob" "this" {
   )
   storage_account_name = try(
     var.storage_account_name != null ? data.azurerm_storage_account.this.name :
-    element(azurerm_storage_account.this.*.name, lookup(var.stream_input_blob[count.index], "storage_account_id"))
+    element(module.storage.*.storage_account_name, lookup(var.stream_input_blob[count.index], "storage_account_id"))
   )
   storage_container_name = try(
     var.storage_container_name != null ? data.azurerm_storage_container.this.name :
-    element(azurerm_storage_container.this.*.name, lookup(var.stream_input_blob[count.index], "storage_container_id"))
+    element(module.storage.*.container_name, lookup(var.stream_input_blob[count.index], "storage_container_id"))
   )
   stream_analytics_job_name = try(
     element(azurerm_stream_analytics_job.this.*.name, lookup(var.stream_input_blob[count.index], "stream_analytics_job_id"))
@@ -80,14 +80,14 @@ resource "azurerm_stream_analytics_stream_input_iothub" "this" {
   length(var.iothub)) == 0 ? 0 : length(var.stream_input_iothub)
   endpoint                     = lookup(var.stream_input_iothub[count.index], "endpoint")
   eventhub_consumer_group_name = lookup(var.stream_input_iothub[count.index], "eventhub_consumer_group_name")
-  iothub_namespace             = try(element(azurerm_iothub.this.*.name, lookup(var.stream_input_iothub[count.index], "iothub_id")))
+  iothub_namespace             = try(element(module.iothub.*.iothub_name, lookup(var.stream_input_iothub[count.index], "iothub_id")))
   name                         = lookup(var.stream_input_iothub[count.index], "name")
   resource_group_name = try(
     var.resource_group_name != null ? data.azurerm_resource_group.this.name :
     element(azurerm_resource_group.this.*.name, lookup(var.stream_input_iothub[count.index], "resource_group_id"))
   )
-  shared_access_policy_key  = try(element(azurerm_iothub.this.*.shared_access_policy[0].primary_key, lookup(var.stream_input_iothub[count.index], "iothub_id")))
-  shared_access_policy_name = lookup(var.stream_input_iothub[count.index], "shared_access_policy_name")
+  shared_access_policy_key  = try(element(module.iothub.*.iothub_dps_share_access_policy_id[0].primary_key, lookup(var.stream_input_iothub[count.index], "iothub_id")))
+  shared_access_policy_name = try(element(module.iothub.*.iothub_dps_share_access_policy_name, lookup(var.stream_input_iothub[count.index], "iothub_id")))
   stream_analytics_job_name = try(element(azurerm_stream_analytics_job.this.*.name, lookup(var.stream_input_iothub[count.index], "stream_analytics_job_id")))
 
   dynamic "serialization" {

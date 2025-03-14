@@ -103,7 +103,7 @@ resource "azurerm_function_app" "this" {
   storage_account_name       = try(
       var.storage_account_name != null ? data.azurerm_storage_account.this.name :
       element(
-        azurerm_storage_account.this.*.name,
+        module.storage.*.storage_account_name,
         lookup(var.function_app[count.index], "storage_account_id"))
   )
 }

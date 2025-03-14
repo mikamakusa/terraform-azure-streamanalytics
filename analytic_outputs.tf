@@ -11,11 +11,11 @@ resource "azurerm_stream_analytics_output_blob" "this" {
   )
   storage_account_name = try(
     var.storage_account_name != null ? data.azurerm_storage_account.this.name :
-    element(azurerm_storage_account.this.*.name, lookup(var.output_blob[count.index], "storage_account_id"))
+    element(module.storage.*.storage_account_name, lookup(var.output_blob[count.index], "storage_account_id"))
   )
   storage_container_name = try(
     var.storage_container_name != null ? data.azurerm_storage_container.this.name :
-    element(azurerm_storage_container.this.*.name, lookup(var.output_blob[count.index], "storage_container_id"))
+    element(module.storage.*.storage_account_name, lookup(var.output_blob[count.index], "storage_container_id"))
   )
   stream_analytics_job_name = try(
     element(azurerm_stream_analytics_job.this.*.name, lookup(var.output_blob[count.index], "stream_analytics_job_id"))
@@ -271,13 +271,13 @@ resource "azurerm_stream_analytics_output_table" "this" {
   storage_account_key = sensitive(data.azurerm_storage_account.this.primary_access_key)
   storage_account_name = try(
     var.storage_account_name != null ? data.azurerm_storage_account.this.name : element(
-      azurerm_storage_account.this.*.name, lookup(var.output_table[count.index], "storage_account_id")
+      module.storage.*.storage_account_name, lookup(var.output_table[count.index], "storage_account_id")
     )
   )
   stream_analytics_job_name = lookup(var.output_table[count.index], "stream_analytics_job_name")
   table = try(
     var.storage_table_name != null ? data.azurerm_storage_table.this.name : element(
-      azurerm_storage_table.this.*.name, lookup(var.output_table[count.index], "table_id")
+      module.storage.*.table_name, lookup(var.output_table[count.index], "table_id")
     )
   )
   columns_to_remove = lookup(var.output_table[count.index], "columns_to_remove")

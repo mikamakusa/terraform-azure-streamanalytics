@@ -13,6 +13,6 @@ resource "azurerm_stream_analytics_managed_private_endpoint" "this" {
   subresource_name = lookup(var.managed_private_endpoint[count.index], "subresource_name")
   target_resource_id = try(
     var.storage_account_name != null ? data.azurerm_storage_account.this.id :
-    element(azurerm_storage_account.this.*.id, lookup(var.managed_private_endpoint[count.index], "target_resource_id"))
+    element(module.storage.*.storage_account_id, lookup(var.managed_private_endpoint[count.index], "target_resource_id"))
   )
 }
