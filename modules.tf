@@ -12,3 +12,11 @@ module "iothub" {
   resource_group_name = var.resource_group_name
   iothub              = var.iothub
 }
+
+module "cosmosdb" {
+  source              = "./modules/terraform-azure-cosmosdb"
+  resource_group_name = var.resource_group_name
+  account             = var.cosmosdb_account
+  sql_database        = var.cosmosdb_sql_database
+  sql_container       = var.cosmosdb_sql_container
+}

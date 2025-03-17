@@ -67,21 +67,12 @@ variable "data_lake_gen2_filesystem" {
 }
 
 variable "cosmosdb_account" {
-  type = list(object({
-    id                = number
-    resource_group_id = optional(number)
-    offer_type        = string
-    name              = string
-  }))
+  type = any
   default = []
 }
 
 variable "cosmosdb_sql_database" {
-  type = list(object({
-    id                = number
-    resource_group_id = optional(number)
-    name              = string
-  }))
+  type = any
   default = []
 }
 
@@ -218,14 +209,7 @@ variable "output_blob" {
 }
 
 variable "cosmosdb_sql_container" {
-  type = list(object({
-    id                   = number
-    name                 = string
-    partition_key_path   = string
-    cosmosdb_account_id  = optional(number)
-    cosmosdb_database_id = optional(number)
-    resource_group_id    = optional(number)
-  }))
+  type = any
   default     = []
   description = <<EOF
   EOF

@@ -43,15 +43,15 @@ resource "azurerm_stream_analytics_output_cosmosdb" "this" {
     (length(var.cosmosdb_account) || var.cosmosdb_account_name != null) &&
   (length(var.cosmosdb_sql_database) || var.cosmosdb_sql_database_name != null)) == 0 ? 0 : length(var.output_cosmosdb)
   container_name = try(
-    element(azurerm_cosmosdb_sql_container.this.*.name, lookup(var.output_cosmosdb[count.index], "container_id"))
+    element(module.cosmosdb.*.sql_container_name, lookup(var.output_cosmosdb[count.index], "container_id"))
   )
   cosmosdb_account_key = try(
     var.cosmosdb_account_name != null ? data.azurerm_cosmosdb_account.this.primary_key :
-    element(azurerm_cosmosdb_account.this.*.primary_key, lookup(var.output_cosmosdb[count.index], "cosmosdb_account_id"))
+    element(module.cosmosdb.cosmosdb_account_primary_key, lookup(var.output_cosmosdb[count.index], "cosmosdb_account_id"))
   )
   cosmosdb_sql_database_id = try(
     var.cosmosdb_sql_database_name != null ? data.azurerm_cosmosdb_sql_database.this.id :
-    element(azurerm_cosmosdb_sql_database.this.*.id, lookup(var.output_cosmosdb[count.index], "cosmosdb_sql_database_id"))
+    element(module.cosmosdb.*.sql_database_id, lookup(var.output_cosmosdb[count.index], "cosmosdb_sql_database_id"))
   )
   name = lookup(var.output_cosmosdb[count.index], "name")
   stream_analytics_job_id = try(

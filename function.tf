@@ -97,7 +97,7 @@ resource "azurerm_function_app" "this" {
   storage_account_access_key = try(
       var.storage_account_name != null ? data.azurerm_storage_account.this.primary_access_key :
       element(
-        azurerm_storage_account.this.*.primary_access_key,
+        module.storage.*.storage_account_primary_access_key,
         lookup(var.function_app[count.index], "storage_account_id"))
   )
   storage_account_name       = try(

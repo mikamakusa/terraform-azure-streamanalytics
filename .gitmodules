@@ -4,3 +4,6 @@
 [submodule "modules/terraform-azure-iothub"]
 	path = modules/terraform-azure-iothub
 	url = git@github.com:mikamakusa/terraform-azure-iothub.git
+[submodule "modules/terraform-azure-cosmosdb"]
+	path = modules/terraform-azure-cosmosdb
+	url = git@github.com:mikamakusa/terraform-azure-cosmosdb.git

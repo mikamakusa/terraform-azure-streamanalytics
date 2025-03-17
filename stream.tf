@@ -12,7 +12,7 @@ resource "azurerm_stream_analytics_stream_input_blob" "this" {
   )
   storage_account_key = try(
     var.storage_account_name != null ? sensitive(data.azurerm_storage_account.this.primary_access_key) :
-    element(azurerm_storage_account.this.*.primary_access_key, lookup(var.stream_input_blob[count.index], "storage_account_id"))
+    element(module.storage.*.storage_account_primary_access_key, lookup(var.stream_input_blob[count.index], "storage_account_id"))
   )
   storage_account_name = try(
     var.storage_account_name != null ? data.azurerm_storage_account.this.name :

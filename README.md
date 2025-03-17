@@ -15,6 +15,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_cosmosdb"></a> [cosmosdb](#module\_cosmosdb) | ./modules/terraform-azure-cosmosdb | n/a |
 | <a name="module_iothub"></a> [iothub](#module\_iothub) | ./modules/terraform-azure-iothub | n/a |
 | <a name="module_storage"></a> [storage](#module\_storage) | ./modules/terraform-azure-storage | n/a |
 
@@ -23,9 +24,6 @@
 | Name | Type |
 |------|------|
 | [azurerm_app_service_plan.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan) | resource |
-| [azurerm_cosmosdb_account.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cosmosdb_account) | resource |
-| [azurerm_cosmosdb_sql_container.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cosmosdb_sql_container) | resource |
-| [azurerm_cosmosdb_sql_database.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cosmosdb_sql_database) | resource |
 | [azurerm_eventhub.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub) | resource |
 | [azurerm_function_app.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/function_app) | resource |
 | [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
@@ -80,10 +78,10 @@
 | <a name="input_app_service_plan"></a> [app\_service\_plan](#input\_app\_service\_plan) | n/a | <pre>list(object({<br/>    id                = number<br/>    name              = string<br/>    resource_group_id = optional(number)<br/>  }))</pre> | `[]` | no |
 | <a name="input_app_service_plan_name"></a> [app\_service\_plan\_name](#input\_app\_service\_plan\_name) | n/a | `string` | `null` | no |
 | <a name="input_cluster"></a> [cluster](#input\_cluster) | n/a | <pre>list(object({<br/>    id                 = number<br/>    name               = string<br/>    streaming_capacity = number<br/>    tags               = optional(map(string))<br/>  }))</pre> | `[]` | no |
-| <a name="input_cosmosdb_account"></a> [cosmosdb\_account](#input\_cosmosdb\_account) | n/a | <pre>list(object({<br/>    id                = number<br/>    resource_group_id = optional(number)<br/>    offer_type        = string<br/>    name              = string<br/>  }))</pre> | `[]` | no |
+| <a name="input_cosmosdb_account"></a> [cosmosdb\_account](#input\_cosmosdb\_account) | n/a | `any` | `[]` | no |
 | <a name="input_cosmosdb_account_name"></a> [cosmosdb\_account\_name](#input\_cosmosdb\_account\_name) | n/a | `string` | `null` | no |
-| <a name="input_cosmosdb_sql_container"></a> [cosmosdb\_sql\_container](#input\_cosmosdb\_sql\_container) | n/a | <pre>list(object({<br/>    id                   = number<br/>    name                 = string<br/>    partition_key_path   = string<br/>    cosmosdb_account_id  = optional(number)<br/>    cosmosdb_database_id = optional(number)<br/>    resource_group_id    = optional(number)<br/>  }))</pre> | `[]` | no |
-| <a name="input_cosmosdb_sql_database"></a> [cosmosdb\_sql\_database](#input\_cosmosdb\_sql\_database) | n/a | <pre>list(object({<br/>    id                = number<br/>    resource_group_id = optional(number)<br/>    name              = string<br/>  }))</pre> | `[]` | no |
+| <a name="input_cosmosdb_sql_container"></a> [cosmosdb\_sql\_container](#input\_cosmosdb\_sql\_container) | n/a | `any` | `[]` | no |
+| <a name="input_cosmosdb_sql_database"></a> [cosmosdb\_sql\_database](#input\_cosmosdb\_sql\_database) | n/a | `any` | `[]` | no |
 | <a name="input_cosmosdb_sql_database_name"></a> [cosmosdb\_sql\_database\_name](#input\_cosmosdb\_sql\_database\_name) | n/a | `string` | `null` | no |
 | <a name="input_data_lake_gen2_filesystem"></a> [data\_lake\_gen2\_filesystem](#input\_data\_lake\_gen2\_filesystem) | n/a | `any` | `[]` | no |
 | <a name="input_eventhub"></a> [eventhub](#input\_eventhub) | n/a | <pre>list(object({<br/>    id                = number<br/>    name              = string<br/>    namespace_name    = string<br/>    partition_count   = number<br/>    resource_group_id = optional(number)<br/>  }))</pre> | `[]` | no |
