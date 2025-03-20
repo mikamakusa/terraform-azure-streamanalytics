@@ -3,8 +3,8 @@ resource "azurerm_stream_analytics_reference_input_mssql" "this" {
     length(var.job) &&
   (length(var.sql_database) || var.sql_database_name != null)) == 0 ? 0 : length(var.reference_input_mssql)
   database = try(
-    var.sql_database_name != null ? data.azurerm_sql_database.this.name : element(
-      azurerm_sql_database.this.*.name, lookup(var.reference_input_mssql[count.index], "database_id")
+    var.sql_database_name != null ? data.azurerm_mssql_database.this.name : element(
+      module.database.*.azurerm_mssql_database_name, lookup(var.reference_input_mssql[count.index], "database_id")
     )
   )
   full_snapshot_query = lookup(var.reference_input_mssql[count.index], "full_snapshot_query")
@@ -16,8 +16,8 @@ resource "azurerm_stream_analytics_reference_input_mssql" "this" {
     azurerm_resource_group.this.*.name, lookup(var.reference_input_mssql[count.index], "resource_group_id"))
   )
   server = try(
-    var.sql_server_name != null ? data.azurerm_sql_server.this.fqdn : element(
-      azurerm_sql_server.this.*.fully_qualified_domain_name, lookup(var.reference_input_mssql[count.index], "server_id")
+    var.sql_server_name != null ? data.azurerm_mssql_server.this.fully_qualified_domain_name : element(
+      module.database.*.mssql_server_fully_qualified_domain_name, lookup(var.reference_input_mssql[count.index], "server_id")
     )
   )
   stream_analytics_job_name = try(element(azurerm_stream_analytics_job.this.*.name, lookup(var.reference_input_mssql[count.index], "stream_analytics_job_id")))

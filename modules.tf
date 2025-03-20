@@ -20,3 +20,10 @@ module "cosmosdb" {
   sql_database        = var.cosmosdb_sql_database
   sql_container       = var.cosmosdb_sql_container
 }
+
+module "database" {
+  source              = "./modules/terraform-azure-database"
+  resource_group_name = var.resource_group_name
+  mssql_database      = var.sql_database
+  mssql_server        = var.sql_server
+}

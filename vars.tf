@@ -57,22 +57,22 @@ variable "storage_account" {
 }
 
 variable "storage_container" {
-  type = any
+  type    = any
   default = []
 }
 
 variable "data_lake_gen2_filesystem" {
-  type = any
+  type    = any
   default = []
 }
 
 variable "cosmosdb_account" {
-  type = any
+  type    = any
   default = []
 }
 
 variable "cosmosdb_sql_database" {
-  type = any
+  type    = any
   default = []
 }
 
@@ -209,7 +209,7 @@ variable "output_blob" {
 }
 
 variable "cosmosdb_sql_container" {
-  type = any
+  type        = any
   default     = []
   description = <<EOF
   EOF
@@ -400,11 +400,11 @@ EOF
 
 variable "synapse_workspace" {
   type = list(object({
-    id                               = number
-    name                             = string
+    id                                   = number
+    name                                 = string
     storage_data_lake_gen2_filesystem_id = any
-    sql_administrator_login          = optional(string)
-    sql_administrator_login_password = optional(string)
+    sql_administrator_login              = optional(string)
+    sql_administrator_login_password     = optional(string)
   }))
   default     = []
   description = <<EOF
@@ -601,24 +601,12 @@ variable "app_service_plan_name" {
 }
 
 variable "sql_server" {
-  type = list(object({
-    id                           = number
-    administrator_login          = string
-    administrator_login_password = string
-    name                         = string
-    resource_group_id            = optional(number)
-    version                      = string
-  }))
+  type    = any
   default = []
 }
 
 variable "sql_database" {
-  type = list(object({
-    id                = number
-    name              = string
-    resource_group_id = optional(number)
-    server_id         = optional(number)
-  }))
+  type    = any
   default = []
 }
 

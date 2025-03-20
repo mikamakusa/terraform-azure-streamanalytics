@@ -7,3 +7,6 @@
 [submodule "modules/terraform-azure-cosmosdb"]
 	path = modules/terraform-azure-cosmosdb
 	url = git@github.com:mikamakusa/terraform-azure-cosmosdb.git
+[submodule "modules/terraform-azure-database"]
+	path = modules/terraform-azure-database
+	url = git@github.com:mikamakusa/terraform-azure-database.git

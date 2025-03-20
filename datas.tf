@@ -46,17 +46,18 @@ data "azurerm_function_app" "this" {
   resource_group_name = data.azurerm_resource_group.this.name
 }
 
-data "azurerm_sql_server" "this" {
+data "azurerm_mssql_server" "this" {
   count               = var.sql_server_name ? 1 : 0
   name                = var.sql_server_name
   resource_group_name = data.azurerm_resource_group.this.name
 }
 
-data "azurerm_sql_database" "this" {
+data "azurerm_mssql_database" "this" {
   count               = var.sql_database_name ? 1 : 0
   name                = var.sql_database_name
   resource_group_name = data.azurerm_resource_group.this.name
-  server_name         = data.azurerm_sql_server.this.name
+  server_name         = data.azurerm_mssql_server.this.name
+  server_id           = ""
 }
 
 data "azurerm_servicebus_namespace" "this" {

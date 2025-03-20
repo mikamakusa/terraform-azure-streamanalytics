@@ -1,4 +1,4 @@
-resource "azurerm_sql_server" "this" {
+/*resource "azurerm_sql_server" "this" {
   count                        = (length(var.resource_group) || var.resource_group_name != null) == 0 ? 0 : length(var.sql_server)
   administrator_login          = sensitive(lookup(var.sql_server[count.index], "administrator_login"))
   administrator_login_password = sensitive(lookup(var.sql_server[count.index], "administrator_login_password"))
@@ -34,4 +34,4 @@ resource "azurerm_sql_database" "this" {
       azurerm_sql_server.this.*.name, lookup(var.sql_database[count.index], "sql_server_id")
     )
   )
-}
+}*/
